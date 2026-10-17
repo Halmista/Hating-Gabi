@@ -17,6 +17,9 @@ public class SecurityGuardObstacle : MonoBehaviourPun
     public Transform lowerHalfSpawn;
     public Transform upperHalfSpawn;
 
+    [Header("Respawn Point")]
+    public Transform upperHalfRespawnPoint;
+
     [Header("Reset")]
     public float resetCooldown = 1.5f;
 
@@ -103,6 +106,7 @@ public class SecurityGuardObstacle : MonoBehaviourPun
         }
     }
 
+
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (resetInProgress || resetRequestSent)
@@ -111,27 +115,26 @@ public class SecurityGuardObstacle : MonoBehaviourPun
         UpperHalfController upper =
             other.GetComponentInParent<UpperHalfController>();
 
-        // Only the Upper Half can trigger the guard.
         if (upper == null)
             return;
 
-        PhotonView playerView =
-            upper.GetComponent<PhotonView>();
+        PhotonView playerView = upper.GetComponent<PhotonView>();
 
-        // Only the owning client requests the reset.
         if (playerView == null || !playerView.IsMine)
             return;
 
         resetRequestSent = true;
 
         photonView.RPC(
-            nameof(RPC_ResetPlayers),
+            nameof(RPC_ResetUpperHalf),
             RpcTarget.All
         );
     }
 
+
+
     [PunRPC]
-    private void RPC_ResetPlayers()
+    private void RPC_ResetUpperHalf()
     {
         if (resetInProgress)
             return;
@@ -149,42 +152,51 @@ public class SecurityGuardObstacle : MonoBehaviourPun
             if (view == null || !view.IsMine)
                 continue;
 
-            LowerHalfController lower =
-                view.GetComponent<LowerHalfController>();
-
             UpperHalfController upper =
                 view.GetComponent<UpperHalfController>();
 
-            Transform spawn = null;
-
-            if (lower != null)
-                spawn = lowerHalfSpawn;
-            else if (upper != null)
-                spawn = upperHalfSpawn;
-
-            if (spawn == null)
+            // Ignore the lower half and all other objects.
+            if (upper == null)
                 continue;
 
-            Rigidbody2D rb =
-                view.GetComponent<Rigidbody2D>();
-
-            if (rb != null)
+            if (upperHalfRespawnPoint == null)
             {
-                rb.linearVelocity = Vector2.zero;
-                rb.angularVelocity = 0f;
-                rb.position = spawn.position;
+                Debug.LogError(
+                    "Security Guard: Upper Half Respawn Point is not assigned!"
+                );
+                break;
+            }
+
+            PlayerHalfRespawn respawn =
+                upper.GetComponent<PlayerHalfRespawn>();
+
+            if (respawn != null)
+            {
+                respawn.RespawnAt(upperHalfRespawnPoint);
             }
             else
             {
-                view.transform.position = spawn.position;
-            }
-        }
+                Rigidbody2D rb = upper.GetComponent<Rigidbody2D>();
 
-        Debug.Log("Security guard caught the Upper Half!");
+                if (rb != null)
+                {
+                    rb.linearVelocity = Vector2.zero;
+                    rb.angularVelocity = 0f;
+                    rb.position = upperHalfRespawnPoint.position;
+                }
+
+                upper.transform.position =
+                    upperHalfRespawnPoint.position;
+            }
+
+            Debug.Log("Security guard caught the Upper Half!");
+            break;
+        }
 
         StopAllCoroutines();
         StartCoroutine(ResetCooldownRoutine());
     }
+
 
     private IEnumerator ResetCooldownRoutine()
     {

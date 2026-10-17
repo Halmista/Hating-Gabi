@@ -62,7 +62,13 @@ public class PhotonLobby : MonoBehaviourPunCallbacks
 
     public override void OnConnectedToMaster()
     {
-        Debug.Log("Connected to Photon Master Server.");
+        Debug.Log(
+            $"PHOTON CONNECTION INFO\n" +
+            $"App ID: {PhotonNetwork.PhotonServerSettings.AppSettings.AppIdRealtime}\n" +
+            $"Region: {PhotonNetwork.CloudRegion}\n" +
+            $"Game Version: {PhotonNetwork.GameVersion}\n" +
+            $"PUN Version: {PhotonNetwork.PunVersion}"
+        );
 
         if (PhotonNetwork.InRoom)
             return;
@@ -279,12 +285,21 @@ public class PhotonLobby : MonoBehaviourPunCallbacks
     }
 
     public override void OnJoinRoomFailed(
-        short returnCode, string message)
+    short returnCode, string message)
     {
+        Debug.LogError(
+            $"JOIN FAILED: {returnCode} - {message}\n" +
+            $"Region: {PhotonNetwork.CloudRegion}\n" +
+            $"Game Version: {PhotonNetwork.GameVersion}\n" +
+            $"Requested Room: {joinID.text.Trim().ToUpper()}"
+        );
+
         SetLobbyButtons(true);
         SetCancelButton(false);
-        SetStatus("Couldn't join room: " + message
-                  + ". Check the code and try again.");
+
+        SetStatus(
+            $"Couldn't join room ({returnCode}): {message}"
+        );
     }
 
     public override void OnDisconnected(DisconnectCause cause)

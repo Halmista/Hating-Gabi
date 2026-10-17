@@ -7,7 +7,7 @@ using UnityEngine;
 public class LowerHalfNetworkSync : MonoBehaviour, IPunObservable
 {
     [Header("Remote Position Smoothing")]
-    public float smoothingSpeed = 15f;
+    public float smoothingSpeed = 12f;
 
     private PhotonView photonView;
     private Rigidbody2D rb;
@@ -25,11 +25,9 @@ public class LowerHalfNetworkSync : MonoBehaviour, IPunObservable
 
     private void FixedUpdate()
     {
-        // The owning player controls its own movement and physics.
         if (photonView.IsMine || !receivedFirstUpdate)
             return;
 
-        // Smoothly follow the latest position received over the network.
         float blend = 1f - Mathf.Exp(
             -smoothingSpeed * Time.fixedDeltaTime
         );
@@ -41,6 +39,7 @@ public class LowerHalfNetworkSync : MonoBehaviour, IPunObservable
         );
 
         rb.MovePosition(nextPosition);
+        Debug.DrawLine(rb.position, networkPosition, Color.red);
     }
 
     public void OnPhotonSerializeView(
@@ -49,13 +48,15 @@ public class LowerHalfNetworkSync : MonoBehaviour, IPunObservable
     {
         if (stream.IsWriting)
         {
-            // Send the owning player's actual physics position.
             stream.SendNext(rb.position);
         }
         else
         {
-            // Receive the owning player's position.
-            networkPosition = (Vector2)stream.ReceiveNext();
+            networkPosition = (Vector2)stream.ReceiveNext(); 
+            
+            if (!receivedFirstUpdate)
+                Debug.Log("First remote position received");
+
             receivedFirstUpdate = true;
         }
     }

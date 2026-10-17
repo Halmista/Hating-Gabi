@@ -33,7 +33,7 @@ public class NetworkPlayerSpawner : MonoBehaviour
 
             spawnPosition = lowerHalfSpawn != null
                 ? lowerHalfSpawn.position
-                : lowerSpawnPosition;
+                : (Vector3)lowerSpawnPosition;
 
             Debug.Log("Spawning Lower Half for Player 1.");
         }
@@ -43,7 +43,7 @@ public class NetworkPlayerSpawner : MonoBehaviour
 
             spawnPosition = upperHalfSpawn != null
                 ? upperHalfSpawn.position
-                : upperSpawnPosition;
+                : (Vector3)upperSpawnPosition;
 
             Debug.Log("Spawning Upper Half for Player 2.");
         }
@@ -55,10 +55,25 @@ public class NetworkPlayerSpawner : MonoBehaviour
             return;
         }
 
-        PhotonNetwork.Instantiate(
+        GameObject player = PhotonNetwork.Instantiate(
             prefabName,
             spawnPosition,
             Quaternion.identity
         );
+
+        PlayerHalfRespawn respawn =
+            player.GetComponent<PlayerHalfRespawn>();
+
+        if (respawn != null)
+        {
+            respawn.SetOriginalSpawn(spawnPosition);
+        }
+        else
+        {
+            Debug.LogError(
+                prefabName +
+                " is missing the PlayerHalfRespawn component!"
+            );
+        }
     }
 }

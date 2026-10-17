@@ -25,6 +25,7 @@ public class UpperHalfController : MonoBehaviour
     private float boostTimer;
 
     private bool connected;
+    public bool IsConnected => connected;
     private Transform interactionOrigin;
 
     private SpriteRenderer[] originalRenderers;

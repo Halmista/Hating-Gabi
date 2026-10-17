@@ -25,7 +25,12 @@ public class ManananggalConnection : MonoBehaviour
     private Animator[] lowerAnimators;
 
     private GameObject connectedInstance;
-    private bool isConnected;
+    public bool isConnected;
+
+    public bool IsConnected => isConnected;
+
+    public Transform ConnectedVisual =>
+        connectedInstance != null ? connectedInstance.transform : null;
 
     private void Awake()
     {
@@ -209,14 +214,57 @@ public class ManananggalConnection : MonoBehaviour
 
         connectedInstance = null;
     }
+
+
     private void LateUpdate()
     {
         if (!isConnected || connectedInstance == null)
             return;
 
+        // Follow the Lower Half with the connected visual.
         connectedInstance.transform.SetPositionAndRotation(
             transform.position + connectedOffset,
             transform.rotation
         );
+
+        // Copy the Lower Half's facing direction.
+        if (lowerController != null &&
+            lowerController.spriteRenderer != null)
+        {
+            bool flipX = lowerController.spriteRenderer.flipX;
+
+            SpriteRenderer[] connectedRenderers =
+                connectedInstance.GetComponentsInChildren<SpriteRenderer>(true);
+
+            foreach (SpriteRenderer sr in connectedRenderers)
+            {
+                if (sr != null)
+                    sr.flipX = flipX;
+            }
+        }
+
+        // Move only the locally owned Upper Half so Player 2's
+        // camera can continue following its own character.
+        UpperHalfController[] upperHalves =
+            FindObjectsByType<UpperHalfController>(
+                FindObjectsSortMode.None
+            );
+
+        /*foreach (UpperHalfController upper in upperHalves)
+        {
+            PhotonView upperView = upper.GetComponent<PhotonView>();
+
+            if (upperView != null &&
+                upperView.IsMine &&
+                upper.IsConnected)
+            {
+                upper.transform.SetPositionAndRotation(
+                    connectedInstance.transform.position,
+                    connectedInstance.transform.rotation
+                );
+            }
+        }*/
     }
+
+
 }

@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 4771674304988347703}
   - component: {fileID: 6990583400056381569}
   - component: {fileID: -8816472995202507020}
+  - component: {fileID: -2626924123135458608}
   m_Layer: 6
   m_Name: UpperHalf
   m_TagString: Untagged
@@ -213,7 +214,7 @@ MonoBehaviour:
   interactableLayer:
     serializedVersion: 2
     m_Bits: 512
-  spriteRenderer: {fileID: 0}
+  spriteRenderer: {fileID: 4443428271753935061}
   facesRightByDefault: 1
 --- !u!114 &4771674304988347703
 MonoBehaviour:
@@ -230,7 +231,7 @@ MonoBehaviour:
   ObservedComponentsFoldoutOpen: 1
   Group: 0
   prefixField: -1
-  Synchronization: 3
+  Synchronization: 2
   OwnershipTransfer: 0
   observableSearch: 2
   ObservedComponents:
@@ -286,3 +287,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::NetworkSpriteFacing
   spriteRenderer: {fileID: 4443428271753935061}
   facesRightByDefault: 1
+--- !u!114 &-2626924123135458608
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4684953882124438082}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4320a755a1e72aa468672add2c3a81e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerHalfRespawn

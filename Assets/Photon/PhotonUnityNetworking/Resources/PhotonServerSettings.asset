@@ -20,7 +20,7 @@ MonoBehaviour:
     AppIdVideo: 
     AppVersion: 
     UseNameServer: 1
-    FixedRegion: 
+    FixedRegion: asia
     Server: 
     Port: 0
     ProxyServer: 
@@ -55,6 +55,10 @@ MonoBehaviour:
   - RPC_RequestNextLine
   - RPC_RequestStartDialogue
   - RPC_SetFacing
+  - RPC_Initialize
+  - RPC_ResetUpperHalf
+  - RPC_ToggleDoor
+  - RPC_DestroyWall
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 0
